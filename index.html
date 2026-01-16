@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoPlayer - Professional MP4 Video Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+    <!-- Application Header -->
+    <div class="app-header">
+        <div class="logo">
+            <i class="fas fa-play-circle logo-icon"></i>
+            <span class="logo-text">NeoPlayer</span>
+        </div>
+        <div class="app-controls">
+            <div class="window-control close" onclick="minimizeApp()"></div>
+            <div class="window-control minimize" onclick="toggleFullscreen()"></div>
+            <div class="window-control maximize" onclick="closeApp()"></div>
+        </div>
+    </div>
+    
+    <!-- Main Application Container -->
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Navigation</div>
+                <div class="sidebar-item active" data-panel="player">
+                    <i class="fas fa-play sidebar-icon"></i>
+                    <span>Now Playing</span>
+                </div>
+                <div class="sidebar-item" data-panel="explorer">
+                    <i class="fas fa-folder-open sidebar-icon"></i>
+                    <span>File Explorer</span>
+                </div>
+                <div class="sidebar-item" data-panel="playlist">
+                    <i class="fas fa-list sidebar-icon"></i>
+                    <span>Playlist</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">Library</div>
+                <div class="sidebar-item">
+                    <i class="fas fa-film sidebar-icon"></i>
+                    <span>Movies</span>
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-video sidebar-icon"></i>
+                    <span>TV Shows</span>
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-music sidebar-icon"></i>
+                    <span>Music Videos</span>
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-history sidebar-icon"></i>
+                    <span>Recently Played</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">Settings</div>
+                <div class="sidebar-item" data-panel="settings">
+                    <i class="fas fa-cog sidebar-icon"></i>
+                    <span>Preferences</span>
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-palette sidebar-icon"></i>
+                    <span>Appearance</span>
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-keyboard sidebar-icon"></i>
+                    <span>Hotkeys</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Video Player -->
+        <div class="player-container" id="playerContainer">
+            <div class="video-wrapper">
+                <video id="videoPlayer"></video>
+                
+                <!-- Loading Overlay -->
+                <div class="loading-overlay" id="loadingOverlay">
+                    <div class="spinner"></div>
+                    <div id="loadingText">Loading video...</div>
+                </div>
+                
+                <!-- Video Info Overlay -->
+                <div class="video-info-overlay" id="videoInfoOverlay">
+                    <div class="video-title" id="videoTitle">No video loaded</div>
+                    <div class="video-details">
+                        <span id="videoResolution">-</span>
+                        <span id="videoDuration">00:00</span>
+                        <span id="videoSize">-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Player Controls -->
+            <div class="player-controls">
+                <div class="progress-container" id="progressContainer">
+                    <div id="progressBar"></div>
+                </div>
+                
+                <div class="time-display">
+                    <span id="currentTime">00:00</span>
+                    <span id="duration">00:00</span>
+                </div>
+                
+                <div class="controls-row">
+                    <div class="controls-left">
+                        <button class="control-btn" id="playPauseBtn" title="Play/Pause (Space)">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="control-btn" id="stopBtn" title="Stop (S)">
+                            <i class="fas fa-stop"></i>
+                        </button>
+                        <button class="control-btn" id="rewindBtn" title="Rewind 10s (←)">
+                            <i class="fas fa-backward"></i>
+                        </button>
+                        <button class="control-btn" id="forwardBtn" title="Forward 10s (→)">
+                            <i class="fas fa-forward"></i>
+                        </button>
+                        
+                        <div class="volume-container">
+                            <button class="control-btn" id="muteBtn" title="Mute/Unmute (M)">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                            <input type="range" id="volumeSlider" min="0" max="100" value="80" title="Volume (↑/↓)">
+                        </div>
+                    </div>
+                    
+                    <div class="controls-center">
+                        <button class="control-btn" id="subtitleBtn" title="Subtitles (C)">
+                            <i class="fas fa-closed-captioning"></i>
+                        </button>
+                        <button class="control-btn" id="repeatBtn" title="Repeat (R)">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                        <button class="control-btn" id="playbackSpeedBtn" title="Playback Speed (>)">
+                            <span id="playbackSpeedText">1x</span>
+                        </button>
+                    </div>
+                    
+                    <div class="controls-right">
+                        <button class="control-btn" id="pictureInPictureBtn" title="Picture-in-Picture (P)">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                        </button>
+                        <button class="control-btn" id="fullscreenBtn" title="Fullscreen (F)">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- File Explorer Panel -->
+        <div class="explorer-container" id="explorerPanel">
+            <div class="explorer-header">
+                <button class="action-btn" id="backBtn" title="Back">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="path-display" id="pathDisplay">C:\Videos\</div>
+                <button class="action-btn" id="refreshBtn" title="Refresh">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="action-btn" id="uploadBtn" title="Upload Video">
+                    <i class="fas fa-upload"></i>
+                </button>
+            </div>
+            
+            <div class="file-grid" id="fileGrid">
+                <!-- Files will be dynamically added here -->
+            </div>
+        </div>
+        
+        <!-- Playlist Panel -->
+        <div class="playlist-container" id="playlistPanel">
+            <div class="playlist-header">
+                <div class="playlist-title">Playlist</div>
+                <div class="playlist-actions">
+                    <button class="action-btn" id="addToPlaylistBtn" title="Add to Playlist">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="action-btn" id="clearPlaylistBtn" title="Clear Playlist">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="action-btn" id="savePlaylistBtn" title="Save Playlist">
+                        <i class="fas fa-save"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="playlist-items" id="playlistItems">
+                <!-- Playlist items will be dynamically added here -->
+            </div>
+        </div>
+        
+        <!-- Settings Panel -->
+        <div class="settings-container" id="settingsPanel">
+            <div class="settings-group">
+                <div class="settings-title">
+                    <i class="fas fa-video"></i>
+                    <span>Video Settings</span>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="setting-label">Hardware Acceleration</div>
+                        <div class="setting-description">Use GPU for video decoding</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="hardwareAccel" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="setting-label">Autoplay</div>
+                        <div class="setting-description">Automatically play next video</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="autoplay" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="setting-label">Default Playback Speed</div>
+                        <div class="setting-description">Speed at which videos play by default</div>
+                    </div>
+                    <select class="select-dropdown" id="defaultSpeed">
+                        <option value="0.5">0.5x</option>
+                        <option value="0.75">0.75x</option>
+                        <option value="1" selected>1x (Normal)</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2">2x</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <div class="settings-title">
+                    <i class="fas fa-volume-up"></i>
+                    <span>Audio Settings</span>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="setting-label">Normalize Volume</div>
+                        <div class="setting-description">Adjust volume levels automatically</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="normalizeVolume">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="setting-label">Default Volume</div>
+                        <div class="setting-description">Volume level when starting the app</div>
+                    </div>
+                    <input type="range" id="defaultVolume" min="0" max="100" value="80" class="volume-slider">
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <div class="settings-title">
+                    <i class="fas fa-keyboard"></i>
+                    <span>Hotkeys</span>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div class="setting-label">Enable Hotkeys</div>
+                        <div class="setting-description">Use keyboard shortcuts to control playback</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enableHotkeys" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hidden File Input -->
+    <input type="file" id="fileInput" accept="video/mp4,video/*" multiple style="display: none;">
+    
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <i class="fas fa-info-circle notification-icon"></i>
+        <div class="notification-message" id="notificationMessage">Notification message</div>
+    </div>
+    
+    <script src="assets/js/app.js"></script>
+</body>
+</html>
